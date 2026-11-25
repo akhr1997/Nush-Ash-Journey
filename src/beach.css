@@ -1,0 +1,38 @@
+.beach-page { --jump-a: 14%; --land-a: calc(14% + 300px); --jump-b: 58%; --land-b: calc(58% + 300px); }
+.beach-sky{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.sun{position:absolute;top:28px;right:8%;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#FFE9A9 0 36%,rgba(255,226,150,0.55) 37% 58%,rgba(255,226,150,0) 72%);animation:sunpulse 6s ease-in-out infinite alternate}
+.cloud{position:absolute;top:110px;left:-180px;animation:cloud 90s linear infinite}
+.beach-scene{position:absolute;left:0;right:0;bottom:0;height:170px;z-index:-1;pointer-events:none;overflow:hidden}
+.wave{position:absolute;left:0;width:200%}
+.w1{bottom:58px;height:90px;animation:wave 16s linear infinite}
+.w2{bottom:50px;height:70px;animation:wave 11s linear infinite reverse}
+.w3{bottom:42px;height:52px;animation:wave 8s linear infinite}
+.w4{bottom:36px;height:22px;animation:wave 6s linear infinite reverse}
+.sand{position:absolute;left:0;right:0;bottom:0;height:46px;background-color:#EBD6A9;background-image:radial-gradient(#D7BC87 1px,transparent 1.4px);background-size:18px 14px;border-radius:50% 50% 0 0 / 10px 10px 0 0}
+.star{position:absolute;left:7%;bottom:8px;transform:rotate(-14deg)}
+.shell{position:absolute;right:12%;bottom:10px;transform:rotate(10deg)}
+@keyframes wave{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes sunpulse{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes cloud{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 400px))}}
+@media (prefers-reduced-motion: reduce){.sun,.cloud,.wave{animation:none}}
+.dol-x{position:absolute;bottom:-34px;left:var(--jump-a);opacity:0;animation:dolx 16s linear infinite}
+.dol-y{animation:doly 16s linear infinite}
+.dol-r{transform-origin:50% 50%;animation:dolr 16s linear infinite}
+.dol-r svg{display:block;overflow:visible}
+.fluke{transform-box:view-box;transform-origin:12px 28px;animation:fluke .45s ease-in-out infinite alternate}
+.splash{position:absolute;bottom:50px;width:90px;height:44px;opacity:0;transform-origin:50% 100%}
+.sp0{left:calc(var(--jump-a) + 15px);animation:spl0 16s linear infinite}
+.sp1{left:calc(var(--land-a) + 50px);animation:spl1 16s linear infinite}
+.sp2{left:calc(var(--jump-b) + 15px);animation:spl2 16s linear infinite}
+.sp3{left:calc(var(--land-b) + 50px);animation:spl3 16s linear infinite}
+@keyframes dolx{0%,9.95%{left:var(--jump-a);opacity:0}10%{left:var(--jump-a);opacity:1}23.75%{left:var(--land-a);opacity:1}23.8%{left:var(--land-a);opacity:0}54.95%{left:var(--jump-b);opacity:0}55%{left:var(--jump-b);opacity:1}68.75%{left:var(--land-b);opacity:1}68.8%,100%{left:var(--land-b);opacity:0}}
+@keyframes doly{0%,10%{transform:translateY(0);animation-timing-function:ease-out}16.875%{transform:translateY(-134px);animation-timing-function:ease-in}23.75%,55%{transform:translateY(0);animation-timing-function:ease-out}61.875%{transform:translateY(-134px);animation-timing-function:ease-in}68.75%,100%{transform:translateY(0)}}
+@keyframes dolr{0%,10%{transform:rotate(-54deg)}16.875%{transform:rotate(3deg)}23.75%{transform:rotate(54deg)}23.85%,55%{transform:rotate(-54deg)}61.875%{transform:rotate(3deg)}68.75%,100%{transform:rotate(54deg)}}
+@keyframes fluke{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+@keyframes spl0{0%,10.58%{opacity:0;transform:scale(.3)}10.6%{opacity:.95;transform:scale(.45)}15.1%,100%{opacity:0;transform:scale(1.25)}}
+@keyframes spl1{0%,22.83%{opacity:0;transform:scale(.3)}22.85%{opacity:.95;transform:scale(.45)}27.35%,100%{opacity:0;transform:scale(1.25)}}
+@keyframes spl2{0%,55.58%{opacity:0;transform:scale(.3)}55.6%{opacity:.95;transform:scale(.45)}60.1%,100%{opacity:0;transform:scale(1.25)}}
+@keyframes spl3{0%,67.83%{opacity:0;transform:scale(.3)}67.85%{opacity:.95;transform:scale(.45)}72.35%,100%{opacity:0;transform:scale(1.25)}}
+@media (prefers-reduced-motion: reduce){.dol-x,.dol-y,.dol-r,.fluke,.splash{animation:none}.dol-x{opacity:0}}
+
+@media (max-width: 700px) { .beach-page { --jump-a: 10px; --land-a: 160px; --jump-b: calc(100% - 300px); --land-b: calc(100% - 150px); } }
