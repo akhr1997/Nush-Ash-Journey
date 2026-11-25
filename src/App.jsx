@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import BeachScene from './BeachScene';
+import PhotoDialog from './PhotoDialog';
 import { memories } from './data/memories';
 import './App.css';
 import './beach.css';
@@ -21,7 +22,7 @@ function Arrow({ direction }) {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={direction === 'previous' ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'} /></svg>;
 }
 
-function MemoryPhoto({ memory, title, priority }) {
+function MemoryPhoto({ memory, title, priority, onOpen }) {
   const [failed, setFailed] = useState(false);
   return failed ? (
     <div className="photo-error" role="status">
@@ -29,16 +30,21 @@ function MemoryPhoto({ memory, title, priority }) {
       <button onClick={() => setFailed(false)}>Try again</button>
     </div>
   ) : (
-    <img src={memory.url} alt={title} onError={() => setFailed(true)} fetchPriority={priority ? 'high' : 'auto'} draggable="false" />
+    <button className="photo-open" onClick={onOpen} aria-label={`Open photo: ${title}`} aria-haspopup="dialog">
+      <img src={memory.url} alt={title} onError={() => setFailed(true)} fetchPriority={priority ? 'high' : 'auto'} draggable="false" />
+    </button>
   );
 }
 
 export default function App() {
   const [{ index, previous }, setSlide] = useState({ index: 0, previous: null });
   const [paused, setPaused] = useState(false);
+  const [photoOpen, setPhotoOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [timerVersion, setTimerVersion] = useState(0);
   const touchStart = useRef(null);
+  const swiped = useRef(false);
+  const photoTrigger = useRef(null);
   const count = memories.length;
 
   useEffect(() => {
@@ -50,7 +56,7 @@ export default function App() {
 
   // A reduced-motion preference starts the slideshow at rest; Play opts in.
   const [motionOptIn, setMotionOptIn] = useState(false);
-  const playing = !paused && (!reducedMotion || motionOptIn);
+  const playing = !photoOpen && !paused && (!reducedMotion || motionOptIn);
 
   useEffect(() => {
     if (!playing) return;
@@ -102,17 +108,24 @@ export default function App() {
             goTo(index + (event.key === 'ArrowLeft' ? -1 : 1));
           }
         }}>
-        <div className="memory-photo" onTouchStart={event => { touchStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY }; }}
+        <div className="memory-photo" onTouchStart={event => { swiped.current = false; touchStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY }; }}
           onTouchEnd={event => {
             if (!touchStart.current) return;
             const dx = event.changedTouches[0].clientX - touchStart.current.x;
             const dy = event.changedTouches[0].clientY - touchStart.current.y;
-            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) goTo(index + (dx < 0 ? 1 : -1));
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+              swiped.current = true;
+              goTo(index + (dx < 0 ? 1 : -1));
+            }
             touchStart.current = null;
           }} onTouchCancel={() => { touchStart.current = null; }}>
           {previous !== null && <div className="photo-previous" aria-hidden="true"><img src={memories[previous].url} alt="" draggable="false" /></div>}
           <div className="photo-slide" key={index}>
-            <MemoryPhoto memory={memory} title={title} priority={index === 0} />
+            <MemoryPhoto memory={memory} title={title} priority={index === 0} onOpen={event => {
+              if (swiped.current) { swiped.current = false; return; }
+              photoTrigger.current = event.currentTarget;
+              setPhotoOpen(true);
+            }} />
           </div>
         </div>
 
@@ -136,6 +149,13 @@ export default function App() {
           </nav>
         </div>
       </main>
+      {photoOpen && <PhotoDialog memory={memory} title={title} sourceRef={photoTrigger} onClose={() => {
+        setPhotoOpen(false);
+        setPaused(false);
+        setMotionOptIn(true);
+        setTimerVersion(version => version + 1);
+        requestAnimationFrame(() => photoTrigger.current?.focus());
+      }} />}
     </div>
   );
 }
